@@ -1,0 +1,436 @@
+
+
+--- we cannot give access to already exist login and server level roles and group level access...
+--- any issue happens in raising the access they need to reach the sail point team...
+--- we need to search with role name and db name like db_owner@DBname
+
+
+
+  
+---- Points to check and remember
+
+--- if we are unable to open the SSMS as permissions is denied so check whether that account is existed in Go to run and give compmgmt.msc -> Groups ->administrators-> add the SQL services using account there....
+
+--- if we are not able to give permissions to account means then check the database user is disabled? then grant the permission connect to that user
+
+
+--- if unable to give any permissions please check the triggers and try to give..
+--- we have give permissions to the Store proc Tables\veiws objects also for user to Execute the Store proc.
+
+---- To grant a permission to a user on Schema level.(this is for schema level not object level don't confuse)
+Ans : GRANT EXECUTE ON SCHEMA :: xls TO "EU\MaPPS_Users_Salzgitter"; 
+ 
+
+does down time needed for extending the data or log drive ?
+scripts for extracting the permissions of the database wise or login wise
+
+---In log shipping we can see the dashboard status in instance -> reports -> standard reports and Transaction logshipping status
+the backup job is configured in primary and copy and restore job is configured in secondary.( same mirroring as well)
+
+how to check the primary server details of the mirroring or logshipping or replication ?[?10-?09-?2019 19:11]  RAJAT SATLE (CRGL-THIRDPARTY.COM):  
+Logshipping -- exec cargill_dba.dbo.csp_VerifyLogShipping
+Mirroirng --- exec cargill_dba.dbo.csp_Verifymirroring
+
+Mainly check the jobs in primary(backup) and secondary(copy and Restore) for trouble shooting ...
+
+--- when we are restoring\overwriting any database put that DB in offline and restore the file and automatically the DB will come to online..
+
+N means it is Dedicated server
+
+sp_helpuser -- to get all the database users list and permissions
+
+------ To find the account owner for SQL authentication user ----
+select top 100 * from id_dw.[dbo].[gdtsview]
+where name like '%CSSPSOLUTION%' 
+ 
+---- How to set to databse offline
+ALTER DATABASE [OL_ANALYTICS] SET OFFLINE 
+
+---- Restoring the database with overwrite option
+USE [master]
+RESTORE DATABASE [OL_ANALYTICS] FROM DISK = 'G:\SS2012A\MSSQL\BACKUP\RefreshDB\New folder\OL_PROD_T_MINUS_1.bak'
+WITH REPLACE,  STATS = 10
+GO 
+
+---Restoring the backup of striped files and also with move option
+restore database backupcbs_ctl from disk='G:\Restore_INC000076881200\CBS_CTL_1_Full_Fri_Sep_13_18_24_41_2019.bak',disk='G:\Restore_INC000076881200\CBS_CTL_2_Full_Fri_Sep_13_18_24_41_2019.bak' WITH  FILE = 1,
+MOVE N'CBS_CTL' TO N'G:\CBS_CTL123.mdf', 
+MOVE N'CBS_CTL_log' TO N'G:\CBS_CTL_log123.ldf'
+
+--- when you are getting error when restoring DB with database holds another backkup set then check we are using all the logical names and use move option for all files
+step 1)RESTORE FILELISTONLY 
+FROM DISK = 'G:\Restore\StageDB_1_Full_Fri_Nov_15_20_20_30_2019.bak'
+
+
+--- Restore the same DB backup in same instance with another DB name
+First create new database with new name and check the new mdl and ldf files are created in the data drive.
+make sure to change the new mdf and ldf files like below CPSSECTEST.mdf
+just information, logical names you can find in the database properties and files of Source database
+USE [master]
+RESTORE DATABASE [CPSSECTEST] FROM  DISK = N'D:\INC000077271624\CPS11142019.bak' WITH  FILE = 1,  
+MOVE N'CPSPayrollData' TO N'D:\MSSQLSERVER\MSSQL\Data\CPSSECTEST.mdf',  
+MOVE N'CPSPayrollData_log' TO N'D:\MSSQLSERVER\MSSQL\Data\CPSSECTEST_log.ldf',  NOUNLOAD,  REPLACE,  STATS = 5
+
+GO
+
+Check the user permissions and orphan users and all..
+
+EXEC sp_change_users_login 'Report'
+
+
+EXEC sp_change_users_login 'Auto_Fix', 'user'
+
+
+
+update Cargill_DBA.dbo.selfServe_Refresh_meta set refresh_status = NULL  where refresh_status ='Fail'
+
+
+---- Our Team Remedy Group : Infra-DB-L2 Operations 
+
+
+
+---When DB corruption if we do repair_rebuild then it will only repair any index corruption or logical corruption also we have to put the database in Single user before doing repairing with allow dataloss or repair_rebuild
+
+--- Link for deleting the login when getting error like Login 'MSSQLTipsUser' owns one or more database(s)
+https://www.mssqltips.com/sqlservertip/4299/sql-server-errors-with-drop-login-and-drop-user/
+
+--- for any personal laptop user's facing issue with softwares like visualstudio or something they need to reach the below
+Remedy Group : Infra-EUC-Workstation and E-mail -EUC-REMOTE-SUPPORT-TEAM
+
+--- Script to check the user belongs to what AD Groups ---
+EXEC xp_logininfo 'AP\n264718','all';
+GO  
+
+---- How to find the objects when the DB is corrupted then we can do the objects repair 
+but if the internal pages corrupted then we need to repair the entire database and dataloss may be possible
+Step 1: SELECT * FROM [msdb].[dbo].[suspect_pages];
+Step 2 : DBCC TRACEON (3604); 
+DBCC PAGE  ({'dbname' | dbid}, filenum, pagenum [, printopt={0|1|2|3} ] )
+DBCC TRACEOFF (3604);
+GO 
+
+take the values from step 1 and dbname is dbid and filenum is file id and pagenum is page_id like below modification
+
+DBCC TRACEON (3604); 
+DBCC PAGE  (7, 3, 126988,0 )
+DBCC TRACEOFF (3604);
+GO
+
+Step 3: then take the value of Metadata: ObjectId = 1927013946 
+step 4: SELECT OBJECT_NAME (1927013946)
+
+----- how to make the standby\readonly to online\availble database
+
+Step 01: Disconnect all the connections to the database
+USE master
+ALTER DATABASE StageDB SET OFFLINE WITH ROLLBACK IMMEDIATE
+ALTER DATABASE StageDB SET ONLINE
+
+Step 02: Bring the database online
+RESTORE DATABASE StageDB WITH RECOVERY
+
+---- How to kill all the running querises on the databases -----
+USE [master];
+
+DECLARE @kill varchar(8000) = '';  
+SELECT @kill = @kill + 'kill ' + CONVERT(varchar(5), session_id) + ';'  
+FROM sys.dm_exec_sessions
+WHERE database_id  = db_id('MyDB')
+
+EXEC(@kill);
+
+---- how to delete all the select queries on the database ----
+USE [master];
+
+DECLARE @kill varchar(8000) = '';  
+SELECT @kill = @kill + 'kill ' + CONVERT(varchar(5), spid) + ';'  
+FROM sys.sysprocesses
+WHERE  dbid = db_id('identityiq') and cmd like '%select%'
+
+EXEC(@kill);
+
+----- How to impersonate the other windows login and check the access
+ execute as login='EU\S214751'
+go
+select * from tablename
+
+---------- how to grant the sa permissions to local pc users they  need to connect through SQL auth sa with the below password and then add 
+
+sqlserver@2016
+SQL 2016 express edition: sqlserver@2016
+SQL 2014 express edition: sqlserver@2014
+SQL 2012 express edition: sqlserver@2012 
+
+---database name and database id to check the sessions running on the database
+
+select * from sys.databases
+
+select * from sys.sysprocesses where dbid=21
+
+------ Database datafile Size in GB -------
+select d.name, m.size * 8 / 1024 / 1024
+from sys.master_files m JOIN sys.databases d ON d.database_id = m.database_id and m.type =0 
+
+------ To find the Databases Size ----
+
+SELECT      sys.databases.name,  
+            CONVERT(VARCHAR,SUM(size)*8/1024)+' MB' AS [Total disk space]  
+FROM        sys.databases   
+JOIN        sys.master_files  
+ON          sys.databases.database_id=sys.master_files.database_id  
+GROUP BY    sys.databases.name  
+ORDER BY    sys.databases.name 
+
+--- DB Mirroring troubleshooting Queries when the secondary DB is not getting removed or still in mirroring :
+
+Alter database CitrixGlobalsite_XA76_LA_Prod set partner off 
+
+ALTER ENDPOINT Mirroring STATE = STOPPED
+
+ALTER ENDPOINT Mirroring STATE = STARTED 
+ 
+ALTER DATABASE X SET PARTNER FORCE_SERVICE_ALLOW_DATA_LOSS
+
+--- DB Mirroring configuration steps ----
+
+1) please stop all the 3 Commvault services in services.msc and stop full and transaction backup job in SQL agent also
+2) Take the full backup and T-log in primary and restore in secondary with restoring mode
+3) Go to Primardy DB properties and mirroring config security and do the configuration and service accounts will be
+SQL servies running in primary and mirror server and start mirroring
+4) Please start the commvault and agent services with our fail
+
+---- Log shipping configuration ----
+
+1) Stop the Commvault services in primary server and check if any backup jobs for that DB in agent if anything we need to stop.
+2) Take the full backup and restore in secondary with no recovery or standy by mode
+3) copy the  3 paths from already configured log shipping in that server and paste it in notepad and take the screen shots of setting if necessary
+4) then go to DB properties and enable the Trasaction log shipping and configure as per the already configured DB mainly paths and settings are mostly common
+5) start the job in LS backup in primary and copy and restore in secondary
+6) check the log shipping status in both primary and secondary
+7) start the commvault services in with out fail
+
+or 2nd method
+1) Stop the copy and restore jobs of that database in secondary server
+2) Take the normal backup of full and Transactional log
+3) Restore in secondary using full with no recovery and log with stand by
+4) restart LS backup job in primary and restart copy and restore in secondary
+5) Please enable the jobs
+
+---- How to give permissions to specific store proc's or all the store proc's in the database
+1) execute the below command on the database 
+SELECT 
+  ROUTINE_SCHEMA,
+  ROUTINE_NAME
+FROM INFORMATION_SCHEMA.ROUTINES
+WHERE ROUTINE_TYPE = 'PROCEDURE'; 
+2) copy the objects to excel and edit all according to the request like below and execute
+Grant view definition on GetDatabaseValuen to  [NA\d571643]
+
+--- Query TO check the backup status -----
+
+D:Full backup
+I:diff backup
+L:Log backup and change the database name
+
+SELECT          database_name,type,
+                backup_start_date,
+                backup_finish_date,
+                backup_size/1024.0 AS BackupSizeKB,user_name
+FROM msdb.dbo.backupset b
+JOIN msdb.dbo.backupmediafamily m ON b.media_set_id = m.media_set_id
+WHERE database_name in('egtps_bi_content_store','egtps_bi_audit')  and type = 'D'
+ORDER BY backup_finish_date DESC
+
+--- link document to enable the deadlocks 
+https://team.cargill.com/sites/gdts/Technical/Database%20Operations/DeadlockNotificatoin.docx?Web=1   
+
+
+Robocopy command
+
+Please share the source and destination folders and given everyone full permission and also in security
+
+robocopy \\sharedserver\sharename D:\Folderpath\ /z /v
+
+---- When we are not able to connect to the Listener and getting error that login is from an untrusted domain error 18452
+Go to Regedit > H_KEY_LOCALMACHINE > SYSTEM > Current control set > Control > LSA > there should be one key disableloopbackcheck and it should be created if not available 
+( just right click on the lsa and new > select DWORD and give name DisableLoopbackCheck and give value 1) -- we should not do that and there is escalation 
+on that and we need to check SPN settings instead of doing changing registry key
+
+------  How to close the multiple tickets at a time
+We need to go to Search incident and 
+Incident type should be Infrastructure event and Assigned group and Assignee and Status should be in- progress
+
+and after we need to select the incidents and then resolve and monitoring incident and then save then will resolve automatically
+
+---- To create the logs for the deadlock transactions 
+
+we have to add these parameteres -t1204 and -t1222 in sql server configuration manager and sql services > proppoerties > Startup parameters.
+
+--- If we receive any access issue tickets means ----
+
+Just check the Orphan users and just fix it and don't forget to select the database when executing and then fix SID for not repeating.
+
+and you can remove the user only in secondary server and then add it back with same sid.( no need of down time for login)
+
+------ when Sql services are in pending state. please execute the below command by selecting master database-----
+   SHUTDOWN  WITH NOWAIT 
+for shut down https://docs.microsoft.com/en-us/sql/t-sql/language-elements/shutdown-transact-sql?view=sql-server-ver15
+
+----- If DB user is in disabled state then check for orphan and if issue still exists then execute grant connect to [domain\user]
+Generally if user is having only access to objects but not having access to any of database roles then this issue appear
+
+--- to restore the db when sessions are active ----
+
+USE master;
+GO
+ALTER DATABASE OL_PROD_T_MINUS_1
+SET SINGLE_USER
+WITH ROLLBACK IMMEDIATE;
+GO
+USE [master]
+RESTORE DATABASE [OL_PROD_T_MINUS_1] FROM DISK = 'G:\MSSQLSERVER\MSSQL\BACKUP\RefreshDB\OL_PROD.bak'
+WITH REPLACE, recovery,  STATS = 10
+GO 
+
+BACKUP DATABASE [OL_PROD] TO  DISK = N'G:\SS2012A\MSSQL\BACKUP\RefreshDB\OL_PROD1203.bak' WITH  COPY_ONLY, NOFORMAT, NOINIT, 
+ NAME = N'OL_PROD-Full Database Backup', SKIP, NOREWIND, NOUNLOAD, COMPRESSION,  STATS = 10
+GO
+
+
+------ Orphan users fix for OL_Prod database ------
+
+EXEC sp_change_users_login 'Auto_Fix', 'administrator'
+go
+EXEC sp_change_users_login 'Auto_Fix', 'FINDURPROXY'
+go
+EXEC sp_change_users_login 'Auto_Fix', 'FINDUR_P_LOCAL'
+go
+EXEC sp_change_users_login 'Auto_Fix', 'GDTSRefreshDB'
+go
+EXEC sp_change_users_login 'Auto_Fix', 'OLFINDUR'
+go
+EXEC sp_change_users_login 'Auto_Fix', 'OLFINDUR'
+go
+EXEC sp_change_users_login 'Auto_Fix', 'SWIFTFINDUR'
+go
+EXEC sp_change_users_login 'Auto_Fix', 'TSF_APIGATEWAY'
+go
+EXEC sp_change_users_login 'Auto_Fix', 'TSF_S4HANA'
+go
+
+---- User need to give permissions to this account NA\AD DB Admins to their share path for us to share the backup files----
+
+
+--- Native backups configuring -----
+exec cspLib_Set_BackupProduct 'SS' 
+
+just execute this selecing Cargilldba and then once confirmed change it to CV again and execute
+--- if you need IIQ CSV files path check this one \\msuselkg3340\IIQ_CSV
+
+----- new central server details -----
+SQL Admin pages will use the new server,
+For reporting services, you will have to substitute msuselkg1190 by either psql01_pgmonitor, or msuselkg3339,
+For now the databases will be standalone, but the listeners can already be used:
+Pgmonitor:         mluselkg045      ( Addbrass, Datacollection, ID_DW)
+Pgip:                      mluselkg046      ( CargillDbaIPcentral)
+Pgmaint:              mluselkg047      ( Cargilldbamaint)
+
+--- when shrinking the temp db just alter the files and some times it will effect only after SQL restart ----
+
+---- The target principal name is incorrect. cannot generate SSPI context -----
+run this command in server setspn -l AP\SQL_SINGIC4047$ last column is process account which SQL services is running
+
+--- how to find the server name with the ip address
+ping -a ipaddress
+
+--- When we are changing the account of the SQL services and agen need to ensure that it is part of Server administrator group and instance  
+
+--- how to add account when we lost permissions also if required how to reset SA account password ----
+
+https://www.rickyadams.com/wp/index.php/2017/06/06/how-to-recover-sa-password-and-start-sql-server-in-single-user-mode/
+
+----- Servers Maintainence window link : http://orchestrator.cargill.com/getpcinfo/querypcinfo.aspx
+
+---- Replication Error when the subscription status is marked as inactive then we need to make active to do that follow the below
+
+Step 1 : select distribution database and execute this Select * from MSsubscriptions 
+
+and then where status=0 or 1 update to 2 using the details
+
+update distribution..MSsubscriptions set status=2 where publisher_id='0' 
+and publisher_db='CPS' and publication_id='2' and subscriber_id='13' and subscriber_db='CPS'
+
+---- Query on how to get schema level permission of user\login---
+EXECUTE AS USER = 'test'
+GO
+USE AdventureWorks2019
+GO
+SELECT * FROM fn_my_permissions(null, 'database'); 
+GO
+
+---- when we are unable to start the sql services on the Servers, there can be below reasons ---
+1) we need to check all the database related disk drives are available\online or not
+2) also check the sql services account may be not having admistrator permission in server side or instance level
+so at that time we can start the agent with local account and then it may start the services
+
+--- How to check connection issues from user machine to DB server or application machine to db server or from anything to DB server.
+
+---- for SSPI Context and target principal name error we need to set the SPN  and how to fix that ...
+
+https://cmatskas.com/fixing-error-cannot-generate-sspi-context-after-changing-sql-service-account/
+Please raise the ticket to TGRC team with the like below commands and if the SQL services are running with the local system account then server name like below if any other process account then replace with account instead of server name of last one (means only end of each command server name not the before one) and ask TGRC iam team to set the DNS
+( - A is attribute for adding and - b is for deleting something like that )
+ Very IMP to check what is SPN's configured just open the windows power shell and setspn -l servername(hostname)
+and you need to check what SPN's are configured and then you need to ask TGRC team to execute only remaining commands which are not configured and not all other wise it won't execute properly
+
+and also if the port number is different then replace port number and also we need to check how to configure for servername\ss201a like these instances
+
+setspn -A MSSQLSvc/msuselkgcp3567 msuselkgcp3567
+setspn -A MSSQLSvc/msuselkgcp3567:1433 msuselkgcp3567
+setspn -A MSSQLSvc/msuselkgcp3567.na.corp.cargill.com msuselkgcp3567
+setspn -A MSSQLSvc/msuselkgcp3567.na.corp.cargill.com:1433 msuselkgcp3567
+
+( how to check the  SPN issue error in sql server logs please check with Siva once and have the details )
+
+------ How to trouble shoot the connection issues and linked server connection issues as well ------
+1) Ping the destination server
+2)tracert ip destination server
+3)telnet ip destination server with SQL port number (like 1433 or what ever configured)
+if still there is connectivity issue then check whether UDP Port 1434 is enabled or not between source and destination with network team 
+if you received telnet is not recongnized command just go to server manager-> roles and features -> telnet client and install and then try it
+but for user machine they need to check with wintel\network\system support team like EUC team
+4)when changing the password for linked server account, login to the server and do it , don't connect instance from other server
+if any one of above is not working then they need to work with Network\wintel team and for telnet network security team will work with the link form for access issue\granting perissions 
+(what is tnsping and how to check it)
+
+--- query to check what processes are running under the user login ------
+select * from sys.sysprocesses where [loginame] like '%B8016204%';  
+
+--- just tip when there are blockings are occuring other than root blocker just concentrate on the login and hostnames so that if we provide to the application team then they can able to know from where these are getting triggered and they can able to stop the jobs if anything is causing the issue ----
+
+---- Listener issue : we need to connect the listener with port number like listnername,portno and if the port id default 1433 then we can directly connect with listener name alone ----
+
+--- Replication Publisher server name : MSUSELKG3233
+1) ask for approval and try to connect the subscriber or else ask the below permissions
+Please grant the sysadmin access to our groups (NA\AD DB Admins and Corp\Ad DB Admins as Sysadmin role) and also provide sysadmin permission for this 
+process account NA\ps346586 or what ever account running with SQL services on CELIVE03MP.pcg.cargill.com
+2) it still not connecting then add the hosts file in windows\system32\drivers\etc\hosts 
+copy all the data in hosts file and add the ip address by the ping full instance name with FQDN and save in notepad as run as administrator and save it in the above path with ALL files option
+3) also check the SQL server browser services also running state at the subscriber end.
+4) if still then ask them to readd the accounts and restart the SQL services and browser services
+5) create the subscriber by selecting the required database
+6)once created launch rep monitor and right click reinitiliaze with new snapshot and check the status and drop a mail
+7) also if still replication not in progress means start the snapshot agent once
+
+Replication errors : 1) if subscriber is not connecting check the ipaddress from user end and add that in host entry.. it may work
+2)if error is like Login failed and pulisher and subscrber are in define mean just restart the services in publisher and subscriber so then it will work
+3) if there is any version mismatch then try to add the subscriber in other server and add the hostname and ip on that server
+
+
+
+----- to troubleshoot the SPN setting below are the commands and edit accordingly ...
+
+setspn -a MSSQLSvc/MSSGSING063:PS AP\ps641055
+setspn -a MSSQLSvc/MSSGSING063.ap.corp.cargill.com:PS AP\ps641055
+setspn -a MSSQLSvc/MSSGSING063:56721 AP\ps641055
+setspn -a MSSQLSvc/MSSGSING063.ap.corp.cargill.com:56721 AP\ps641055

@@ -1,0 +1,17 @@
+--- Step 1 : Execute this query on the database and get the results
+SELECT t.name "Table Name",
+       c.name "Column Name",
+       c.collation_name "Collation"
+  FROM sys.tables t INNER JOIN
+       sys.columns c ON c.object_id=t.object_id INNER JOIN
+       sys.types s ON s.user_type_id=c.user_type_id
+WHERE c.collation_name LIKE 'SQL_Latin1_General_CP1_CI_AS'
+   AND t.type like 'U'
+   AND t.name not like 'spt%'
+   AND t.name not like 'MSrep%' 
+
+
+--- Step 2 : and then change the table name and column name and char type ----
+
+ALTER TABLE dbo.TraFolio
+ALTER COLUMN  DomainDescription varchar(50) COLLATE Modern_Spanish_CI_AS NULL 

@@ -1,0 +1,9 @@
+DECLARE @db_id INT;
+DECLARE @object_id INT;
+SET @db_id = db_id(N'Database_Name');
+SET @object_id = OBJECT_ID(N'Table_Name');
+BEGIN
+   SELECT *
+   FROM sys.dm_db_index_physical_stats(@db_Id,@object_ID, NULL, NULL , 'DETAILED') AS IPS;
+END
+GO

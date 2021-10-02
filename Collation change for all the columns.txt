@@ -1,0 +1,27 @@
+--change the db name and previous collation and new collation and then execute the output in new window 
+also change the -1 to max in the output and then execute ---
+
+use siglonet_cse_qa
+
+declare @result varchar(1000)
+declare @c1 varchar(100)
+declare @c2 varchar(100)
+declare @c3 varchar(100)
+declare @c4 varchar(100)
+declare db_cursor cursor for 
+select TABLE_NAME, COLUMN_NAME,
+       DATA_TYPE,
+       CHARACTER_MAXIMUM_LENGTH
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE CHARACTER_SET_NAME is not NULL
+       AND COLLATION_NAME like 'SQL_Latin1_General_CP1_CI_AS'
+open db_cursor 
+fetch next from db_cursor into @c1, @c2, @c3, @c4
+while @@FETCH_STATUS = 0
+begin
+set @result = 'ALTER TABLE '+@c1+' ALTER COLUMN ' +@c2+' ' +@c3+ '('+@c4+') COLLATE Modern_Spanish_CI_AS'
+print @result
+fetch next from db_cursor into @c1, @c2, @c3, @c4
+end
+close db_cursor
+deallocate db_cursor

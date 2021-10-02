@@ -1,0 +1,79 @@
+Torn Pages \ Corrupt pages – all in a days work for a  DBA. But can anyone tell me how to use DBCC CHECKDB and the steps to take if a corrupt page is discovered? 
+
+This is a typical question I’ll ask at an interview for a DBA. In most cases the answers are vague .
+
+My approach on DBCC CHECKDB.
+The main function of DBCC CHECKDB is to check consistency errors.
+
+DBCC CHECKDB ('yourDB') WITH NO_INFOMSGS  is the basic command. Running this command will commit all the integrity checks
+
+Use DBCC CHECKDB (‘MyDB’) WITH PHYSICAL_ONLY to check just the physical consistency of the database. This is a faster option
+
+If errors are found , the first step is to assess the situation and check your backups. You don’t have a backup?  Make a note and ensure you implement a valid backup strategy in the future.
+
+Maintaining a valid backup policy is the best way I’ve found to deal with integrity errors
+
+An example of output is :
+
+ 
+
+The Index Allocation Map (IAM) page (0:0) is pointed to by the previous pointer of IAM page (1:913345) in object ID 0, index ID -1, partition ID 0, alloc unit ID 290336478199808 (type Unknown), but it was not detected in the scan.
+CHECKDB found 1 allocation errors and 0 consistency errors not associated with any single object.
+CHECKDB found 1 allocation errors and 0 consistency errors in database 'yourdb'.
+repair_allow_data_loss is the minimum repair level for the errors found by DBCC CHECKDB (yourDB).
+ 
+
+In this example the corrupted page is (1: 913345). Is it a heap, non-clustered index or clustered index?
+
+ Examine the page using this method:
+
+ 
+
+DBCC TRACEON (3604, -1)
+GO
+DBCC PAGE('yourdb', 1, 913345, 3)
+GO 
+ 
+
+In the output you will see something like:
+
+Metadata: IndexId = n
+
+If n is greater than 1 it is a non-clustered index and can safely be dropped and recreated. If n is 0 or 1 you have data corruption and need to perform one of the options described below.
+
+What should I do ?
+The cleanest method of recovering is the last valid backup. If  the Recovery Model is Full , then RESTORE the last valid backup.
+
+If LOG backups are maintained – then a) backup the tail b) RESTORE the valid backup with NO RECOVERY , c) Restore the Log files d) Restore the tail
+
+If the Recovery Model is Simple , then you can only recover the last known full backup
+
+Repair Options
+1)    Do NOT proceed beyond this point , without first taking a FULL SQL Server database backup. One option is a Copy only backup in SQL server 2005 and not break the backup chain
+
+2)    Now that you have a FULL backup , let’s proceed with the Repair Options. You’ll notice in the output above a message “xxxxxx is the minimum repair level for the errors found by DBCC CHECKDB” at the bottom of the message.  
+
+This message specifies the minimum repair level
+
+3) If you’re lucky the message specifies REPAIR_REBUILD. This option commits the repairs with no possibility of data loss.
+
+The syntax for REPAIR_REBUILD is :
+
+DBCC CHECKDB('yourDB', REPAIR_REBUILD)
+4) If you’re less lucky you’ll see REPAIR_ALLOW_DATA_LOSS . There is a possibility of data loss during these repairs:
+
+ DBCC CHECKDB('yourDB', REPAIR_ALLOW_DATA_LOSS)
+After you’ve completed one of these repair options – run the CHECKCONSTRAINTS integrity checks. The example syntax checks all enabled and disabled constraints on every table on the database  :
+
+ DBCC CHECKCONSTRAINTS WITH ALL_CONSTRAINTS;
+ 
+6)   A more conservative but safer method for table corruption is to use DBCC CHECKTABLE. This checks the integrity of the tables. If you identify a corrupt table, one approach may be to attempt a batch by batch export of data into another table, until you hit the problem area.
+
+Summary
+Always have a valid backup available. In most cases , this remains your best solution.
+
+Before you commit to the repair methods , list all possible methods of alleviating risk.
+
+ 
+
+Author: Jack Vamvas (http://www.sqlserver-dba.com)
