@@ -1,0 +1,107 @@
+*** Restore ***
+
+USE [master] 
+RESTORE DATABASE [E911AdminProdTest] FROM  DISK = N'H:\MSSQL11.MSSQLSERVER\MSSQL\Backup\TSTDSWMV001\e911admintest\FULL\TSTDSWMV001_e911admintest_FULL_20180120_001500.bak' WITH  FILE = 1,  
+MOVE N'E911AdminProdTest_data' TO N'G:\MSSQL11.MSSQLSERVER\MSSQL\DATA\e911adminPtest.mdf', 
+MOVE N'E911AdminProdTest_log' TO N'I:\MSSQL11.MSSQLSERVER\MSSQL\Data\e911admintest_log.ldf', 
+NORECOVERY,  NOUNLOAD, REPLACE , STATS = 5 
+
+
+
+
+ 
+--For tables last modified date
+SELECT name, [modify_date] FROM sys.tables
+
+----how to find for the users in group
+
+EXEC master..xp_logininfo 
+@acctname = 'GSM1900\CDES_TAD_RO',
+@option = 'members'
+
+----asmdatabaseadministr
+
+---- how to check the percentage of backup and restoration progress
+
+SELECT session_id as SPID, command, a.text AS Query, start_time, percent_complete, dateadd(second,estimated_completion_time/1000, getdate()) as estimated_completion_time 
+FROM sys.dm_exec_requests r CROSS APPLY sys.dm_exec_sql_text(r.sql_handle) a 
+WHERE r.command in ('BACKUP DATABASE','RESTORE DATABASE')
+
+------how to delete step of a job please change step number and jobname accordingly
+USE msdb ; 
+GO 
+EXEC dbo.sp_delete_jobstep @job_name = N'CAR_AdHoc', @step_id = 1 ;
+
+--------how much percentage complete on spid
+select percent_complete,* from sys.dm_exec_requests where session_id=94
+
+---------how to check the last password change for login account
+SELECT LOGINPROPERTY('teduser1', 'PasswordLastSetTime'); 
+
+--------how to check when the database is last restored
+SELECT 
+   [rs].[destination_database_name], 
+   [rs].[restore_date], 
+   [bs].[backup_start_date], 
+   [bs].[backup_finish_date], 
+   [bs].[database_name] as [source_database_name], 
+   [bmf].[physical_device_name] as [backup_file_used_for_restore]
+FROM msdb..restorehistory rs
+INNER JOIN msdb..backupset bs ON [rs].[backup_set_id] = [bs].[backup_set_id]
+INNER JOIN msdb..backupmediafamily bmf ON [bs].[media_set_id] = [bmf].[media_set_id] 
+ORDER BY [rs].[restore_date] DESC
+
+----- how to create login for AG group secondaries with primary SID
+USE MASTER
+ GO
+  SELECT name, sid FROM sys.sql_logins WHERE name = 'MIR_PRD_ETL'
+ GO
+
+CREATE Login MIR_PRD_ETL WITH password = 'Tfj7Z@PAD4wT0$7D>IV._C|u:ue@LN', SID = 0x7C204E79CAA42441B383D8431082426D  
+
+---- how to get check which tables are in replication on database
+
+SELECT *
+FROM sys.tables
+WHERE is_replicated = 1  
+
+---- To check which step is running in job and we need to change SPID
+
+SELECT  SUBSTRING(detail.text, 
+                  requests.statement_start_offset / 2, 
+                  (requests.statement_end_offset - requests.statement_start_offset) / 2)
+FROM    sys.dm_exec_requests requests
+CROSS APPLY sys.dm_exec_sql_text (requests.plan_handle) detail
+WHERE   requests.session_id = 66
+
+--- to check commands left to replicate and space used
+sp_spaceused MSrepl_commands
+
+----how to change the tempdb file size through command and put the size which you want to extend here below
+USE [master]
+GO
+ALTER DATABASE [tempdb] MODIFY FILE ( NAME = N'temp2', SIZE = 512000KB , FILEGROWTH = 1GB )
+
+
+--- how to troubleshoot when databases are in recovery pending state or DB corrupted.
+ALTER DATABASE [DBName] SET EMERGENCY;
+GO
+ALTER DATABASE [DBName] set single_user
+GO
+DBCC CHECKDB ([DBName], REPAIR_ALLOW_DATA_LOSS) WITH ALL_ERRORMSGS;
+GO 
+ALTER DATABASE [DBName] set multi_user
+GO 
+
+---- how to set primary replica name for servername if it is showing wrong\NULL name
+sp_dropserver 'NULL';        
+    
+sp_addserver 'PRDPWSQLM00003\SDIM03', 'local'; 
+
+--- Please use below command on tempdb database if we are unable to shrink the data and log  tempdb files with this error message 'Page could not be moved because it is a work table page'
+DBCC FREEPROCCACHE
+
+
+
+
+

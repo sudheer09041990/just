@@ -1,0 +1,249 @@
+1.To find out which recovery model your database is using ?
+         SELECT databasepropertyex('database', 'recovery')
+
+2.To change the recovery option for a database ?
+       ALTER DATABASE database name SET RECOVERY {FULL | SIMPLE | BULK_LOGGED}
+
+3.To know the compatability level of all databases ?
+           select * from sys.databases
+
+4.To know the compatability of a particular database?
+         select * from sys.databases where name='database name'
+
+5.To know the space availability in a log file?
+            dbcc sqlperf(logspace)
+
+6.To know the space availability in a data file?
+                  sp_spaceused
+
+7.To know the details of particular database (db name,filename,filegroup,size)?
+                   sp_helpfile
+
+8.To know the details of all databases (db name,size,owner,date created,status,compatability level)?
+                    sp_helpdb
+
+9.To know the details of database (name,filename)?
+            select * from sys.sysaltfiles
+
+10.To know the details of database (db name,login name,status,command)?
+                        sp_who2
+
+11.command for FULL BACKUP?
+         backup database databasename to disk='path.bak'
+
+12.command for differential backup?
+         backup database aaa to disk='path.bak' with differential
+
+13.command for transaction log backup?
+         backup log aaa to disk='d:\aaalog.trn'
+
+14.command for file & filegroup backup?
+         backup database aaa file='aaa', filegroup='primary' to disk='d:\aaafile.bak' with noformat
+
+15.command for tail log backup?
+         backup log aaa to disk='d:\aaatail.trn' with no_truncate
+
+16.command for mirrored backup?
+        backup database aaa to disk='d:\aaamirror1.bak' mirror to disk='d:\aaamirror2.bak' with format
+
+17.command for striped backup?
+        backup database aaa to disk='d:\aaastriped_part1.bak',disk='d:\aaastriped_part2.bak' 
+
+18.command for partial backup?
+        backup database aaa read_write_filegroups to disk='d:\aaapartial.bak'
+
+19.command for partial differential backup?
+        backup database aaa read_write_filegroups to disk='d:\aaapartialdiff.bak' with differential
+
+20command for copyonly backup for (data files)?
+        backup database aaa to disk='d:\aaa_copyonly.bak' with copy_only
+
+21.command for copyonly backup for (log files)?
+        backup log aaa to disk='d:\aaa_copyonly_log.bak' with copy_only
+
+22.To know the server role permissions?
+                 exec sp_srvrolepermission
+
+23.To know the particular server role permission?
+                 exec sp_srvrolepermission sysadmin
+
+24.To create built in administrator account?
+                 create login[builtin administrators] from windows
+
+25.To know the details of protocols?
+                select * from sys.endpoints
+
+26.To know rows in a table?
+           select count (*) from tablename
+
+27.command for restore?
+        restore database dbname from disk='path' with norecovery,replace
+
+28.command to know the validity of a backup?
+        restore verifyonly from disk='path'
+
+29.command to know the header of backup?
+        restore headeronly from disk='path'
+
+30.command to verify the contents of backup?
+        restore filelistonly from disk='path'
+
+31.command to restore a full backup into a different location?
+        
+        restore DATABASE [NEW_DATABASE_NAME] FROM DISK = 'F:\pathFULL.bak' WITH FILE=1,
+        MOVE
+       'OLD_FILE_NAME_mdf' TO 'C:\NEW_FILE_NAME....mdf',
+        MOVE
+       'OLD_FILE_NAME_ldf' TO 'C:\NEW_FILE_NAME.....ldf';
+        GO
+
+32.commands to keep database in offline mode?
+
+        alter database dbname set offline with rollback immediate
+  the above option kills all the current transactions &put the database immediately in offline state
+
+        alter database dbname set offline with rollback after 5 seconds
+  the above option kills the transactions after 5 seconds & then puts the db in offline state
+
+        alter database dbname set offline with no_wait
+  the above option can be used when we dont want the command to be blocked
+
+33.command to keep the database in online state?
+              alter database dbname set online
+
+34.command for backup of database with PASSWORD protected?
+       BACKUP DATABASE [DATABASE NAME] TO DISK='C:\path.BAK' WITH MEDIAPASSWORD='password'
+
+35.Restoring database with specifying PASSWORD?
+      RESTORE DATABASE [DATABASE NAME] FROM DISK='C:\path.BAK' WITH MEDIAPASSWORD='password'
+
+36.command to create database?
+           create database dbname
+
+37.command to change the collation settings?
+      alter database dbname collate sql_latin1_general_cp1_cs_as
+
+38.command to set the database in a single user mode?
+      alter database dbname set single_user
+
+39.command to create a file group?
+      alter database dbname add filegroup filegroup name
+
+40.command to change the logical name of a file?
+      alter database dbname modify file(name='old filename',newname='new filename')
+
+41.command to disable autogrowth of a file?
+      alter dbname modify file(name='filename',filegrowth=0)
+
+42.command to resize a file?
+      alter dbname modify file(name='filename',size='kb')
+
+43.command to make database read only?
+      alter database dbname set read_only
+
+44.command to remove file from database?
+      alter database dbname remove file filename
+
+45.command to change the path of a file ?
+      alter database dbname modify file(name='logical filename',filename='path.mdf')
+      alter database dbname modify file(name='logical filename',filename='path.ldf')
+
+46.command to put database in a restricted mode?
+      alter database dbname set restricted_user
+
+48.command to know the edition?
+      select @@version
+      select serverproperty ('edition')
+
+49.command to know how much space is available in logfile?
+      dbcc sqlperf(logspace)
+
+50.command to know how much space is available in datafile?
+      sp_spaceused
+
+51.command to know database name and size?
+      sp_databases
+
+52.command to know the database id?
+      select db_id(databasename)
+
+53.command for point in time recovery?
+    restore log dbname from disk='path' stopat 'dd:mm:yy hh:mm:ss'
+
+54.command to delete older backups?
+   use msdb
+   go
+   exec sp_delete_database_backuphistory 'dbname'
+
+55.command to delete older backups beyond a date?
+   use msdb
+   go
+   exec sp_delete_backuphistory'date'
+
+56.command to know job information?
+       use msdb
+       select * from sysjobs
+
+57.command to know database is really in suspect mode or not?
+       select databasepropertyex('dbname''status')
+
+DBCC CHECKALLOC   - Check consistency of disk allocation.
+DBCC CHECKCATALOG - Check catalog consistency
+DBCC CHECKCONSTRAINTS - Check integrity of table constraints.
+DBCC CHECKDB    - Check allocation, and integrity of all objects.
+DBCC CHECKFILEGROUP - Check all tables and indexed views in a filegroup.
+DBCC CHECKIDENT - Check identity value for a table.
+DBCC CHECKTABLE - Check integrity of a table or indexed view.
+DBCC CLEANTABLE - Reclaim space from dropped variable-length columns.
+DBCC dllname    - Unload a DLL from memory.
+DBCC DROPCLEANBUFFERS - Remove all clean buffers from the buffer pool.
+DBCC FREE... CACHE  - Remove items from cache.
+DBCC HELP        - Help for DBCC commands.
+DBCC INPUTBUFFER - Display last statement sent from a client to a database instance.
+DBCC OPENTRAN    - Display information about recent transactions.
+DBCC OUTPUTBUFFER - Display last statement sent from a client to a database instance.
+DBCC PROCCACHE   - Display information about the procedure cache
+DBCC SHOW_STATISTICS - Display the current distribution statistics
+DBCC SHRINKDATABASE - Shrink the size of the database data and log files.
+DBCC SHRINKFILE  - Shrink or empty a database data or log file. 
+DBCC SQLPERF     - Display transaction-log space statistics. Reset wait and latch statistics.
+DBCC TRACE...    - Enable or Disable trace flags
+DBCC UPDATEUSAGE - Report and correct page and row count inaccuracies in catalog views
+DBCC USEROPTIONS - Return the SET options currently active
+DBCC deprecated commands
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
