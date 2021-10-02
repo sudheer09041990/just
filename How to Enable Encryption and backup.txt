@@ -1,0 +1,24 @@
+steps create the encryption key and create certificate using master 
+USE master; 
+GO 
+CREATE MASTER KEY ENCRYPTION BY PASSWORD = '[N5g%fr,-@8FVxyw6c8;V#d+\S%?JB'; 
+go 
+CREATE CERTIFICATE devdsnpp003DEKCertificate WITH SUBJECT = 'devdsnpp003DEKCertificate'; 
+go 
+
+Step 2:add the encryption certificate to DB and then alter the DB to Encryption on
+
+USE AdventureWorks2012; 
+GO 
+CREATE DATABASE ENCRYPTION KEY WITH ALGORITHM = AES_128 ENCRYPTION BY SERVER CERTIFICATE devdsnpp003DEKCertificate; 
+GO 
+ALTER DATABASE AdventureWorks2012 SET ENCRYPTION ON; 
+GO 
+
+step 3 : backup the file using master with password
+
+USE master;
+BACKUP CERTIFICATE devdsnpp003DEKCertificate
+TO FILE = 'C:\temp\devdsnpp003DEKCertificate1'
+WITH PRIVATE KEY (file='C:\temp\devdsnpp003DEKCertificate1.pvk',
+ENCRYPTION BY PASSWORD='[N5g%fr,-@8FVxyw6c8;V#d+\S%?JB') 

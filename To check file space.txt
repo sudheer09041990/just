@@ -1,0 +1,82 @@
+--xp_fixeddrives
+--Script for displaying the database free space details 
+SET QUOTED_IDENTIFIER OFF
+SET NOCOUNT ON
+
+DECLARE @dbname varchar(500)
+declare @string varchar(250)
+set @string = ''
+
+create table #datafilestats 
+(    Fileid tinyint, 
+    FileGroup1 tinyint, 
+    TotalExtents1 bigint, 
+    UsedExtents1 bigint, 
+    [Name] varchar(50), 
+    [FileName] sysname )
+
+create table #dbstats 
+(    dbname varchar(50), 
+    FileGroupId tinyint, 
+    FileGroupName varchar(25),
+    Name varchar(50),
+    FilePath varchar(1000),
+    TotalSizeinMB dec (10, 2), 
+    UsedSizeinMB dec (10, 2),
+    FreeSizeinMB dec (10, 2)) 
+
+DECLARE dbnames_cursor CURSOR FOR SELECT name FROM master..sysdatabases WHERE name='tempdb'
+OPEN dbnames_cursor
+
+FETCH NEXT FROM dbnames_cursor INTO @dbname
+
+WHILE (@@fetch_status = 0)
+BEGIN
+
+    set @string = 'use ' +'['+@dbname+']' +' DBCC SHOWFILESTATS'
+    insert into #datafilestats  exec (@string)
+
+insert into #dbstats (dbname, FileGroupId, TotalSizeinMB, UsedSizeinMB,Name,FilePath)
+    select @dbname, FileGroup1, TotalExtents1*65536.0/1048576.0, 
+UsedExtents1*65536.0/1048576.0,Name,FileName
+    from #datafilestats 
+
+set @string = 'use ' +'['+@dbname+']'+' update #dbstats set FileGroupName = 
+sysfilegroups.groupname from #dbstats, sysfilegroups where 
+#dbstats.FileGroupId = sysfilegroups.groupid and #dbstats.dbname =''' +  
+@dbname + ''''
+  exec (@string)
+
+
+
+    update  #dbstats set FreeSizeinMB = TotalSizeinMB - UsedSizeinMB where dbname = @dbname
+
+    truncate table #datafilestats
+
+FETCH NEXT FROM dbnames_cursor INTO @dbname
+END
+
+CLOSE dbnames_cursor
+DEALLOCATE dbnames_cursor
+
+drop table #datafilestats
+select * from #dbstats Order by FreeSizeinMB Desc
+drop table #dbstats
+------------------------
+--Script to calculate information about the Log Files
+set nocount on
+
+create table #LogUsageInfo 
+( db_name varchar(50), 
+  log_size dec (10, 2), 
+  log_used_percent dec (8, 2),
+  status dec (7, 1) )
+
+insert #LogUsageInfo  exec ('dbcc sqlperf(logspace) with no_infomsgs')
+
+select * from #LogUsageInfo where db_name='tempdb'  Order by log_used_percent 
+
+drop table #LogUsageInfo
+
+
+

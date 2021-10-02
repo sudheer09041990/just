@@ -1,0 +1,19 @@
+1) Go to foglight monitorig tool and go to dashboards --> administration > schedules and manage schedules
+
+2) check if the server or schedule exists in the foglight by searching 
+with server name if not please add with time and schedule details 
+
+3) go to server Log into FMS server (i.e. prddsmwmn003 or prddsmwmn004).  
+
+4 ) go to D:\Quest_Software\Foglight\bin\agentblackout
+
+5) edit the agents.csv file and add server names in the file 
+
+6) go to this path in windows powershell  
+cd D:\Quest_Software\Foglight\bin\agentblackout
+
+7) and execute this command by changing the correct schedule name
+.\AgentsBlackout.ps1 "PRDTWNDWH0016" "PRDTWNDWH0016" "PRDTWNDWH0016" 
+
+--- below link for checking manual reboot patching dates and server.
+https://tmobileusa.sharepoint.com/teams/SysPatching/Pages/Default.aspx 
