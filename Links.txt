@@ -1,4 +1,69 @@
+Links:
 
+Server Status : https://secure.gdts.cargill.com/apps/sql_check/Default.aspx 
+TCS Learning portal : https://tcsglobal.udemy.com/	 
+Share point	https://team.cargill.com/sites/gdts/SitePages/Home.aspx
+IP Web Page	https://secure.gdts.cargill.com/apps/gdts/dbwebapps_ssip/default.asp
+SQL Aerver Admin	http://www.gdts.cargill.com/sqlserver_admin/Default.htm
+Security Vault	http://gdtssecure.cargill.com/IDO/oraclerr.nsf
+BMC Remedy https://itsmweb.cargill.com/
+User access link sail point : https://access.cargill.com
+Red Gate  https://msuselkg4105.na.corp.cargill.com/Account/LogIn?ReturnUrl=%2f
+Paging link http://italerting.cargill.com/
+My Global IT https://myglobalit.cargill.com/myrequests/
+Outlook Web link : https://outlook.office365.com/mail/inbox
+check Server belongs to  : http://dashboard.cs.cargill.com/ 
+Roster : https://team.cargill.com/sites/gdts/Administrative/Forms/AllItems.aspx?RootFolder=%2Fsites%2Fgdts%2FAdministrative%2FOperations%2FGDTS%20Operations%2FShift%20Schedules&FolderCTID=0x01200033DA0D94963F464B8731B8096428DF26&View=%7B112C53FD-432F-4B05-B34C-7C0FC5ED5265%7D 
+Servers Maintainence window link : http://orchestrator.cargill.com/getpcinfo/querypcinfo.aspx
+
+---- Link for Documents of Database Activities --------------------------------------
+  <\\Admpls233m\gdtsdata\_private\SQL Server\GDTS_setup\SelfServe_BU_DB_refresh>> 
+
+https://wts.na.cargill.com/Citrix/XenApp/WTSNACargillcom/site/default.aspx
+Alert ticket link : http://orchestrator.cargill.com/ATA/ 
+Billing codes : http://cgea.cargill.com/CGO/OPNMAIL1.NSF/Billing%20Codes%20Frame?OpenFrameSet 
+Dashborad server link : http://dashboard.cs.cargill.com/ 
+-- security password process accounts http://gdtssecure.cargill.com/IDO/oraclerr.nsf  
+-- ERPM security password process accounts http://erpm.cargill.com 
+DSID lookup : http://www.ds.cargill.com/cgi-bin/lookup.cgi
+---- TCS mail id : https://myapp.tcs.com/Citrix/MYAPPSTOREWeb/ 
+------ ALL TEAMS ALIAS WE CAN FIND http://infoquest.cargill.com/search.aspx?mode=site
+----- (Link for SMTP access on server http://cgea.cargill.com/CGO/emailrelay.nsf/
+then we need to check with this command ready or not  telnet mailrelayapp.na.corp.cargill.com  25
+and then create new operator then we can map that in job notification)
+DB details Power BI link --https://app.powerbi.com/groups/me/apps/2e0c800e-43f1-49e3-873a-e84ffcbfdc13/reports/90541cf3-28c3-4a9f-8ae4-bfc7b351791d/ReportSection7b0d1e0f8c4c5b3ee729
+Backup Commvault Links
+
+(Elk and NA will be same)
+Elk Grove   	 http://egcs.cargill.com/console
+NA Remotes	   http://nacs.cargill.com/console
+EMEA   	  http://eucs.cargill.com/console
+LA  	  http://lacs.cargill.com/console
+AP   	 http://apcs.cargill.com/console 
+
+msuselkg1190.na.corp.cargill.com -- for ticket close
+(((---- All of the costs of infra services are published on the globalit website 
+https://myglobalit.cargill.com/products-services/infrastructure-hosting/database/sql-server-database/db-standard-shared/  )))
+
+--- Desk number 02067949521
+02067949531 -- Rajat place number
+
+00mobile#23852
+Skype id : sudheerkumar_sivalasetty@crgl-thirdparty.com
+corp\admin_s477311
+
+DS id for training : https://cargill.plateau.com/learning/user/nativelogin.jsp
+1483626 Gpsssr_4321
+
+Cargill system : AP\s477311 and pwd : Gpsssr_1122
+
+servers access : corp\admin_s477311 and Gpsssr_1122
+
+India domain 1730797 and Theekshana@3 ( changed on 27-12 -2021)
+and ultimatix 1730797 and APr@2022 and
+cargill domain : ap\s477311 and Gpsssr_6666
+Tcs mail : sudheerkumar.sivalasetty@tcs.com JAn@2022  (1730797 and Theekshana@3 ,,,Gpsssr_3333)
+for login in any tools id is AP\s477311 and Gpsssr_4321
 
 --- we cannot give access to already exist login and server level roles and group level access...
 --- any issue happens in raising the access they need to reach the sail point team...
@@ -90,6 +155,18 @@ update Cargill_DBA.dbo.selfServe_Refresh_meta set refresh_status = NULL  where r
 
 
 ---When DB corruption if we do repair_rebuild then it will only repair any index corruption or logical corruption also we have to put the database in Single user before doing repairing with allow dataloss or repair_rebuild
+
+Teams in Cargill
+Windows: -SERVICE-OPS-INFRA-DCS-TCS-WINDOWS <SERVICEOPSINFRADCSTCSWINDOWS@exch.cargill.com>
+Backup : -SERVICE-OPS-INFRA-DCS-TCS-BACKUP-CARGILL <-SERVICE-OPS-INFRA-DCS-TCS-BACKUP-CARGILL@exch.cargill.com>
+VM Ware Team : -SERVICE-OPS-INFRA-DCS-TCS-VMWARE  <SERVICE-OPS-INFRA-DCS-TCS-VMWARE@Cargill.com>
+AICC Team : -SERVICE-OPS-INFRA-DCS-TCS-AICC <-SERVICE-OPS-INFRA-DCS-TCS-AICC@exch.cargill.com>
+Network Team : -SERVICE-OPS-INFRA-NETWORK-OPERATIONS-TCS <-SERVICE-OPS-INFRA-NETWORK-OPERATIONS-TCS@Cargill.com>
+Citrix : -SERVICE-OPS-INFRA-DCS-TCS-CITRIX <-SERVICE-OPS-INFRA-DCS-TCS-CITRIX@exch.cargill.com>
+security : -SERVICE-OPS-INFRA-SECURITY-OPERATIONS-TCS <-SERVICE-OPS-INFRA-SECURITY-OPERATIONS-TCS@exch.cargill.com>
+TGRC Team : -GLOBALIT-TGRC-IAM-OPERATIONS-TEAM <-GLOBALIT-TGRC-IAM-OPERATIONS-TEAM@exch.cargill.com>
+OSC Team : -APPS-AMS-OSC-PLANT-CONTROLS-NA-TEAM-ALL ( PCG\MEAT SERVER ISSUES)
+SQL Project Team : -SOLUTION-DEL-INFRA-DB-TCS-SQL <-SOLUTION-DEL-INFRA-DB-TCS-SQL@exch.cargill.com>
 
 --- Link for deleting the login when getting error like Login 'MSSQLTipsUser' owns one or more database(s)
 https://www.mssqltips.com/sqlservertip/4299/sql-server-errors-with-drop-login-and-drop-user/
@@ -379,7 +456,7 @@ so at that time we can start the agent with local account and then it may start 
 
 https://cmatskas.com/fixing-error-cannot-generate-sspi-context-after-changing-sql-service-account/
 Please raise the ticket to TGRC team with the like below commands and if the SQL services are running with the local system account then server name like below if any other process account then replace with account instead of server name of last one (means only end of each command server name not the before one) and ask TGRC iam team to set the DNS
-( - A is attribute for adding and - b is for deleting something like that )
+( - A is attribute for adding and - d is for deleting something like that )
  Very IMP to check what is SPN's configured just open the windows power shell and setspn -l servername(hostname)
 and you need to check what SPN's are configured and then you need to ask TGRC team to execute only remaining commands which are not configured and not all other wise it won't execute properly
 
@@ -410,27 +487,125 @@ select * from sys.sysprocesses where [loginame] like '%B8016204%';
 
 ---- Listener issue : we need to connect the listener with port number like listnername,portno and if the port id default 1433 then we can directly connect with listener name alone ----
 
---- Replication Publisher server name : MSUSELKG3233
-1) ask for approval and try to connect the subscriber or else ask the below permissions
-Please grant the sysadmin access to our groups (NA\AD DB Admins and Corp\Ad DB Admins as Sysadmin role) and also provide sysadmin permission for this 
-process account NA\ps346586 or what ever account running with SQL services on CELIVE03MP.pcg.cargill.com
-2) it still not connecting then add the hosts file in windows\system32\drivers\etc\hosts 
-copy all the data in hosts file and add the ip address by the ping full instance name with FQDN and save in notepad as run as administrator and save it in the above path with ALL files option
-3) also check the SQL server browser services also running state at the subscriber end.
-4) if still then ask them to readd the accounts and restart the SQL services and browser services
-5) create the subscriber by selecting the required database
-6)once created launch rep monitor and right click reinitiliaze with new snapshot and check the status and drop a mail
-7) also if still replication not in progress means start the snapshot agent once
+--- -----------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------Transferred till here on 01-10-2021 ----------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Replication errors : 1) if subscriber is not connecting check the ipaddress from user end and add that in host entry.. it may work
-2)if error is like Login failed and pulisher and subscrber are in define mean just restart the services in publisher and subscriber so then it will work
-3) if there is any version mismatch then try to add the subscriber in other server and add the hostname and ip on that server
+Perfomance Tip but very rare case\scenario on CPU issue with regards Sockets and CPU cores
+
+execute the query and check all the CPU's are online or check if any are offline 
+
+SELECT scheduler_id, 
+       cpu_id, 
+       STATUS, 
+       is_online
+FROM sys.dm_os_schedulers
+
+if offline then it is like the cpu's are not using by SQL and need to check that instance properties -> processes -> automactially is enabled or not
+and it should be enabled so that it can use all processes 
+if enabled but still offline means then you need to check the SQL version that supports no of sockets and cores
+Example : SQL 2016 supports 4 sockets and some x cores then check the configuration is correct with command msinfo32
 
 
+-- SPN (Service principal name) issue error resolving steps and just make sure that -d is for deleting commands and the thing is first you need to execute the -A respective commands
+what ever are required and then if they got the error that duplicate entry account then we need to delete that by changing the command of -d 
+and also the account which is already registered
 
------ to troubleshoot the SPN setting below are the commands and edit accordingly ...
+also the below commands are also with the example servers of having named instance like mssgsingic4049\SS2014A and also different SQL port number other than default 
 
-setspn -a MSSQLSvc/MSSGSING063:PS AP\ps641055
-setspn -a MSSQLSvc/MSSGSING063.ap.corp.cargill.com:PS AP\ps641055
-setspn -a MSSQLSvc/MSSGSING063:56721 AP\ps641055
-setspn -a MSSQLSvc/MSSGSING063.ap.corp.cargill.com:56721 AP\ps641055
+setspn -d MSSQLSvc/mssgsingic4049.ap.corp.cargill.com mssgsingic4049
+setspn -d MSSQLSvc/mssgsingic4049.ap.corp.cargill.com:SS2014A mssgsingic4049
+setspn -d MSSQLSvc/mssgsingic4049.ap.corp.cargill.com:61025 mssgsingic4049
+setspn -A MSSQLSvc/mssgsingic4049.ap.corp.cargill.com PS235171
+setspn -A MSSQLSvc/mssgsingic4049.ap.corp.cargill.com:SS2014A PS235171
+setspn -A MSSQLSvc/mssgsingic4049.ap.corp.cargill.com:61025 PS235171
+setspn -A MSSQLSvc/mssgsingic4049 PS235171
+setspn -A MSSQLSvc/mssgsingic4049:SS2014A PS235171
+setspn -A MSSQLSvc/mssgsingic4049:61025 PS235171
+
+setspn -d MSSQLSvc/mssgsingic4049.ap.corp.cargill.com:1433 mssgsingic4049
+setspn -a MSSQLSvc/mssgsingic4049.ap.corp.cargill.com:1433 PS235171
+setspn -a MSSQLSvc/mssgsingic4049:1433 PS235171
+
+---- Replication loading files size issue then i have executed this query in publisher to resolve 
+
+EXEC sp_configure 'max text repl size', -1 after execution please execute reconfigure 
+
+---- if you found the backups are not running, check the backup account permissions and then check the AG backup prefference if it is secondary then change
+it to Primary and then monitor and also no need to stop sql services because it is Commvault tool backup ---
+
+---- to disable the instance in monitoring go to redgate and configuration and select the base monitor and 
+also search with only server name and the go to that instance and icon suspend monitoring and till the last instance is 
+decommissioned then we can remove monitoring
+
+--- Backup Servername msuselkg4548 to login for commvault requests
+
+----- how to redirect all the read only connections to Secondary database and only update\insert transactions to primary.
+Ans : In the connection string we can set as read intent only. also read queue have to set
+(https://www.sqlshack.com/how-to-configure-read-only-routing-for-an-availability-group-in-sql-server-2016/)
+
+---- Query to get count value of column ---
+SELECT COUNT(*), NTUserName FROM ip_sysadmin_trace_temp GROUP BY NTUserName;
+
+----Migrating\copying\moving data\log\temp db files to other drives ----
+before starting this just for safety take the logical name and old path with file names using query.
+
+Temp DB : No need to copy the files just we need to execute the new path commands and restart the servcies for tempdb
+
+Data and LDF : user db's (ldf and mdf) we need to make the db offline and copy the files to the new location and 
+execute the commands with updated locations and then make the db online
+
+ALTER DATABASE [Cargill_DBA] MODIFY FILE ( NAME = Cargill_DBA_Data, FILENAME = 'E:\MSSQLSERVER\MSSQL\Data\Cargill_DBA.mdf');
+ALTER DATABASE [Cargill_DBA] MODIFY FILE ( NAME = Cargill_DBA_Log, FILENAME = 'F:\MSSQLSERVER\MSSQL\Data\Cargill_DBA_log.ldf');
+
+---- if there is any issue when executing commands as that logical name is not picking up and getting error due to then use this braces [] and execute.
+
+else Detach and Attach is also the easiest way by selecting the just we need to select the new path locations.
+(if we select the MDF file then automaticall ldf file will be selected if the path is incorrect we can also select the new path)
+
+----- When the below error come you can restart the service as because total instance is un available
+
+pre-login handshake failed , initialization =7038 and handshake=9996
+
+---- just a Tip that, the disk latency should be Milliseconds so then only the I/O is faster means if it is Seconds then definetly storage/OS team has
+to look that ----
+
+---- just a Tip, if any perfomacne issue the we need to check the CPU's configuration ( cores and sockets) of the Server.
+Example if 4 cores with 2 sockets configuration will not give better perfomance and 4 cores 1 socket will give better perfomance so we need to ensure the 
+cores and sockets are configures properly --
+
+--- How to kill all the sleeping sessions on the specicific\single database --
+
+USE [master];
+
+DECLARE @kill varchar(8000) = '';  
+SELECT @kill = @kill + 'kill ' + CONVERT(varchar(5), spid) + ';'  
+FROM sys.sysprocesses
+WHERE  dbid = db_id('db_gdr') and status='sleeping'
+
+EXEC(@kill);
+
+---- if user is having connection failure\issue and getting some "error 40 , could not open a connection to sql server"
+then he can try connect with FQDN -----
+
+--- just a tip when the backup's are not running through the backup tools like Commvault..etc then just just ask
+to kill the current running jobs from the tool and retry running it again from CV backup's and data\log file drive should not be full , also shrink log file 
+if it is more space ----
+
+---- for login issue in AG databases, when failover happens the databases users will only failover.
+so we need to make sure the just login should be added in all the secondary nodes and also for any
+SQL auth type please check sid is same or not. if not then please create the same ----
+
+--- If the app team having any access issues then check also TLS 1.0 and TLS 1.2 needs to be enabled by changing the value to 1 in the registrey key
+and then server reboot is mandatory to effect the changes ----- also they have to update the same in their app servers also and reboot.
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols
+keys under the Protocols key for both Client and Server subkeys.
+SCHANNEL\Protocols\SSL 2.0\Client 
+SCHANNEL\Protocols\SSL 2.0\Server
+SCHANNEL\Protocols\TLS 1.0\Client
+SCHANNEL\Protocols\TLS 1.0\Server
+
+--- During the weekend there are issues occured for few servers which are auto window patched and the servers are
+slow and could see there is svchost.exe is consuming more memory and the issue is resolved after the reboot of servers. 
+
+

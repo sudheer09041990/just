@@ -1,0 +1,47 @@
+--- just execute this script directly on the master and it will get all the db_owner users permissions of all the databases
+and if you want for other role like db_datareader then you can change and execute as per your requirement ----
+
+
+DECLARE @dbname VARCHAR(50)   
+DECLARE @statement NVARCHAR(MAX)
+
+CREATE TABLE #UserPermission
+(
+   ServerName SYSNAME,
+   DbName SYSNAME,
+   UserName SYSNAME,
+   TypeOfLogIn VARCHAR(50),
+   PermissionLevel VARCHAR(50),
+   TypeOfRole VARCHAR(50)
+)
+
+DECLARE db_cursor CURSOR 
+LOCAL FAST_FORWARD
+FOR  
+SELECT name
+FROM master.sys.databases
+WHERE state_desc='online' 
+OPEN db_cursor  
+FETCH NEXT FROM db_cursor INTO @dbname  
+WHILE @@FETCH_STATUS = 0  
+BEGIN  
+ 
+SELECT @statement = 'use '+@dbname +';'+ 'SELECT
+
+ServerName=@@servername, dbname=db_name(db_id()),p.name as UserName, p.type_desc as TypeOfLogin, pp.name as PermissionLevel, pp.type_desc as TypeOfRole 
+FROM sys.database_role_members roles
+JOIN sys.database_principals p ON roles.member_principal_id = p.principal_id
+JOIN sys.database_principals pp ON roles.role_principal_id = pp.principal_id
+where pp.name=''db_owner'' and p.name<>''dbo'''
+
+INSERT INTO #UserPermission
+EXEC sp_executesql @statement
+
+FETCH NEXT FROM db_cursor INTO @dbname  
+END  
+CLOSE db_cursor  
+DEALLOCATE db_cursor
+
+SELECT * FROM #UserPermission
+
+DROP TABLE #UserPermission

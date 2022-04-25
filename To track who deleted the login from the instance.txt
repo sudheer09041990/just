@@ -1,0 +1,122 @@
+
+Really very nice to find out who deleted the login from the instance then the first option is to know how to find using
+default trace files
+
+and 2nd one we can find by creating triggers and just execute the 2a and 2b scripts directly no need to change anything
+it will create the loginaudit table but it will log all the details only future. i tried it and succeded.
+
+
+--1 How to find out who deleted login using Default trace?
+
+SELECT * into #loginstatus
+FROM fn_trace_gettable
+('C:\Program Files\Microsoft SQL Server\MSSQL12.SQLTEST\MSSQL\Log\log.trc', default)
+select * from #loginstatus
+where EventSubClass=2
+
+select S.name,L.EventSubClass, L.LoginName,L.TargetLoginName as LoginDropped,L.StartTime, L.DatabaseID from #Loginstatus L
+    inner join sys.trace_events S
+    on L.EventClass = S.trace_event_id
+    where L.EventSubClass=2 and S.name='Audit Addlogin Event'
+    order by StartTime desc
+
+   
+--Audit Server Principal Management Event
+
+--2- How to find out who deleted login using SQL Server Audit Trigger
+
+-- 2a) Creating Master Audit Table
+ USE [master]
+
+GO
+
+
+SET ANSI_NULLS ON
+
+GO
+
+SET QUOTED_IDENTIFIER ON
+
+GO
+
+SET ANSI_PADDING ON
+
+GO
+
+CREATE TABLE [dbo].[LoginAudit](
+
+[Eventtime] [datetime] NULL,
+
+[Eventtype] [nvarchar](100) NULL,
+
+[ServerLogin] [nvarchar](100) NOT NULL,
+
+[DatabaseUser] [nvarchar](100) NOT NULL,
+
+[TSQLText] [varchar](max) NULL,
+
+[Eventdata] [xml] NOT NULL
+
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+
+GO
+
+ALTER TABLE [dbo].[LoginAudit] ADD DEFAULT (getdate()) FOR [Eventtime]
+
+GO
+
+
+-- 2b) Creating Audit Trigger
+
+USE [master]
+GO
+
+/****** Object:  DdlTrigger [LoginAudit]    Script Date: 3/31/2015 4:58:33 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+CREATE TRIGGER [LoginAudit]
+
+ON ALL SERVER
+
+FOR CREATE_LOGIN ,ALTER_LOGIN, DROP_LOGIN
+
+AS
+
+BEGIN
+
+DECLARE @Eventdata XML
+
+SET @Eventdata = EVENTDATA()
+
+IF EXISTS(SELECT 1 FROM master.information_schema.tables WHERE table_name = 'LoginAudit')
+
+Begin
+
+INSERT into master.dbo.LoginAudit
+
+(EventType,EventData, ServerLogin,DatabaseUser,TSQLText)
+
+VALUES (@Eventdata.value('(/EVENT_INSTANCE/EventType)[1]', 'NVarChar(100)'),
+
+@Eventdata,system_USER,CONVERT(NVarChar(100), CURRENT_USER),
+
+@Eventdata.value('(/EVENT_INSTANCE/TSQLCommand)[1]', 'NVarChar(2000)' ))
+
+End
+
+END
+
+
+GO
+
+ENABLE TRIGGER [LoginAudit] ON ALL SERVER
+GO

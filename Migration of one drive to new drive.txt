@@ -1,0 +1,32 @@
+---- Current disk format is MBR type so they can't increase more than 2 TB so we created new drive with 3 TB with GPT disk Type format 
+(Migration of files(contained mdf and ldf and tempdb) from one drive to another new drive
+Step 1 : stopped the sql services  
+we moved all files(contained mdf and ldf and tempdb) from one drive to another new drive
+
+errors we faced when we are copying all the data, data is getting doubled so we choose to copy files by few files and then few then it got success
+2) once all the files are transferred changed the current drive to some other letter and then new drive to Current drive letter
+and then we started the services and then all are fine except one database ( it is in suspect mode then we executed the below emergency command
+and we got the O errors in the output last line then we execute the below repair command and it came online
+
+USE master
+GO
+ALTER DATABASE CVAM_FS_Planning SET EMERGENCY
+GO
+DBCC CHECKDB (CVAM_FS_Planning)
+GO
+
+------------------------------------
+
+ALTER DATABASE CVAM_FS_Planning SET SINGLE_USER WITH ROLLBACK IMMEDIATE
+GO
+DBCC CHECKDB (CVAM_FS_Planning, REPAIR_ALLOW_DATA_LOSS)
+GO
+ALTER DATABASE CVAM_FS_Planning SET MULTI_USER
+GO
+
+ 
+
+
+
+
+
