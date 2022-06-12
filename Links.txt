@@ -62,7 +62,8 @@ servers access : corp\admin_s477311 and Gpsssr_1122
 India domain 1730797 and Theekshana@3 ( changed on 27-12 -2021)
 and ultimatix 1730797 and APr@2022 and
 cargill domain : ap\s477311 and Gpsssr_6666
-Tcs mail : sudheerkumar.sivalasetty@tcs.com JAn@2022  (1730797 and Theekshana@3 ,,,Gpsssr_3333)
+Laptop and tools : Gpsssr_1133
+Tcs mail : sudheerkumar.sivalasetty@tcs.com APr@2022  (1730797 and Theekshana@3 ,,,Gpsssr_4444)
 for login in any tools id is AP\s477311 and Gpsssr_4321
 
 --- we cannot give access to already exist login and server level roles and group level access...
@@ -608,4 +609,23 @@ SCHANNEL\Protocols\TLS 1.0\Server
 --- During the weekend there are issues occured for few servers which are auto window patched and the servers are
 slow and could see there is svchost.exe is consuming more memory and the issue is resolved after the reboot of servers. 
 
+-------------------  Already copied till here ----------
+---- Configuring database in mirroring.. please make sure we take full and log backup to take normal backups only
+as copy only won't work and we will get errors and also please stop backup jobs local or tool and also
+restore in secondary with no recvoery use with GUI or command and after primary use mirror and add the database.
 
+--- when you are facing any issue when sharing the network share path access when giving permissions add your server 
+login account also like corp\admin_s477311 and give full control then network share path will work when adding DB into AG.
+
+---- Static ip's are reserved ip's and dynamic ip's are free ip's
+and also for multisubnet configuration of cluster ( HA and DR) we need two ip's for configuring because those HA and DR will be in different regions and ip's will be different subnets
+
+----  DR failover log shipping below steps -------
+
+App team need to stop their services.
+and we will check the logshipping monitoring status
+and then we need to make sure the any tool backups then those needs to be stopped and also stop the backup job in primary,copy and restore job in secondary.
+take the t-log backup and restore in secondary with norecovery and tail log with no-recovery in secondary.
+
+
+when we are using backup log command we can mention no recovery as well then the datbase will be in restoring state.
